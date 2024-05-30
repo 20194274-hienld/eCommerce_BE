@@ -6,6 +6,7 @@ const morgan = require('morgan')
 const app = express()
 
 // init middleware
+// console.log(`Process::`, process.env);
 app.use(morgan("dev"))
 // morgan("dev") color in status -> Bật khi dev mode
 // morgan("combined") follow apache standard ->  Khi đưa lên production
@@ -17,18 +18,11 @@ app.use(compression())
 
 // init db
 require('./dbs/init.mongodb');
-const { checkOverload } = require('./helpers/check.connect')
-checkOverload()
-
+// const { checkOverload, countConnect } = require('./helpers/check.connect')
+// checkOverload()
+// countConnect()
 // init routers
-app.get('/', (req, res, next) => {
-  const strCompress = 'Hello Factipjs'
-
-  return res.status(200).json({
-    message: 'Hello!',
-    metadata: strCompress.repeat(10000)
-  })
-})
+app.use('', require('./routers'))
 
 // handling error
 

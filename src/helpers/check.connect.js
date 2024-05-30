@@ -19,7 +19,7 @@ const checkOverload = () => {
         const memoryUsage = process.memoryUsage().rss;
         // Example maxium number of connections based on number of cores
         const maxConnections = numCores * 5;
-
+        console.log(`Num cores: ${numCores}`);
         console.log(`Active connection: ${numConnection}`);
         console.log(`Memory usage: ${memoryUsage / 1024 / 1024} MB`);
 
