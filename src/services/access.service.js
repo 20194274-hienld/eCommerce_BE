@@ -2,8 +2,10 @@
 
 const shopModel = require("../models/shop.model")
 const bcrypt = require('bcrypt')
-const crypto = require('crypto')
-
+const crypto = require('node:crypto')
+const KeyTokenService = require("./keyToken.service")
+const { createTokenPair } = require("../auth/authUtils")
+const { getInfoData } = require("../utils")
 
 const RoleShop = {
     SHOP: 'SHOP',
@@ -31,17 +33,62 @@ class AccessService {
 
             if (newShop) {
                 // created privateKey, publicKey
-                const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
-                    modulusLength: 4096
-                })
+                // const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
+                //     modulusLength: 4096,
+                //     publicKeyEncoding: {
+                //         type: 'pkcs1',
+                //         format: 'pem',
+                //     },
+                //     privateKey: {
+                //         type: 'pkcs1',
+                //         format: 'pem',
+                //     }
+                // })
+
+                const privateKey = crypto.randomBytes(64).toString('hex')
+                const publicKey = crypto.randomBytes(64).toString('hex')
+
 
                 console.log({ privateKey, publicKey }); // save collection key store
-            }
 
+                const keyStore = await KeyTokenService.createKeyToken({
+                    userId: newShop._id,
+                    privateKey,
+                    publicKey
+                })
+
+                if (!keyStore) {
+                    return {
+                        code: 'xxxx',
+                        message: 'keyStore error'
+                    }
+                }
+
+                // console.log(`pubKeyString::`, publicKeyString);
+                // const publicKeyObject = crypto.createPublicKey(publicKeyString)
+                // console.log(`pubKeyObject::`, publicKeyObject);
+
+                // created token pair
+                const tokens = await createTokenPair({ userId: newShop._id, email }, publicKey, privateKey)
+                console.log(`Create Token Success::`, tokens);
+
+                return {
+                    code: 201,
+                    metadata: {
+                        shop: getInfoData({ fileds: ['_id', 'name', 'email'], object: newShop }),
+                        tokens
+                    }
+                }
+            }
+            return {
+                code: 200,
+                metadata: null
+            }
         } catch (err) {
+            console.log(err);
             return {
                 code: 'xxx',
-                message: error.message,
+                message: err.message,
                 status: 'error'
             }
         }

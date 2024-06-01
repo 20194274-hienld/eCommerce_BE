@@ -15,6 +15,12 @@ app.use(morgan("dev"))
 // morgan("tiny") -> ngắn hơn nữa
 app.use(helmet())
 app.use(compression())
+app.use(express.json())
+app.use(express.urlencoded(
+    {
+        extended: true
+    }
+))
 
 // init db
 require('./dbs/init.mongodb');
