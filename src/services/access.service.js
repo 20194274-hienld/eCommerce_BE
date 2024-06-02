@@ -44,11 +44,8 @@ class AccessService {
                 //         format: 'pem',
                 //     }
                 // })
-
                 const privateKey = crypto.randomBytes(64).toString('hex')
                 const publicKey = crypto.randomBytes(64).toString('hex')
-
-
                 console.log({ privateKey, publicKey }); // save collection key store
 
                 const keyStore = await KeyTokenService.createKeyToken({
@@ -63,11 +60,9 @@ class AccessService {
                         message: 'keyStore error'
                     }
                 }
-
                 // console.log(`pubKeyString::`, publicKeyString);
                 // const publicKeyObject = crypto.createPublicKey(publicKeyString)
                 // console.log(`pubKeyObject::`, publicKeyObject);
-
                 // created token pair
                 const tokens = await createTokenPair({ userId: newShop._id, email }, publicKey, privateKey)
                 console.log(`Create Token Success::`, tokens);
